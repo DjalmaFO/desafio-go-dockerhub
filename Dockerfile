@@ -1,17 +1,20 @@
-FROM golang:1.16-alpine AS dfogolang
+FROM tinygo/tinygo:latest AS dfogolang
 
 WORKDIR /go/src
 
 COPY go.mod .
-RUN go mod tidy
 
 COPY *.go ./
 
 RUN go build
 
-FROM alpine:latest
+RUN  tinygo build -o app
+
+RUN rm -rf go.mod
+
+FROM hello-world:latest
 
 COPY --from=dfogolang /go/src/app .
 
-CMD ["./app"]
+ENTRYPOINT ["./app"]
 
